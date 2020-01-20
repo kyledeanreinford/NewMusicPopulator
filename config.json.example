@@ -1,0 +1,5 @@
+{
+    "cid" : "{spotify client id}",
+    "secret" : "{spotify client secret}",
+    "username" : "{spotify username}"
+}

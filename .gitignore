@@ -1,0 +1,4 @@
+config.json 
+*.[Cc]ache
+__pycache__/
+.cache-kyledeanreinford
