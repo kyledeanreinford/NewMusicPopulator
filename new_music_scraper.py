@@ -16,31 +16,33 @@ username = data['username']
 
 redirect_uri = 'http://localhost/'
 todays_date = str(datetime.date(datetime.now()))
+today = datetime.now().weekday()
+if today == 4:
+    DD = datetime.now().day
+    MM = datetime.now().month
+    year = str(datetime.now().year)
+    YY = year[:2]
+    release_date = f'{MM}/{DD}/{YY}'
 
-url = "https://www.grimeys.com/new-releases/1-17-20"
+    url = f"https://www.grimeys.com/new-releases/{release_date}"
+    print(url)
 
-req = Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+    req = Request(url, headers={'User-Agent': 'Mozilla/5.0'})   
+    webpage = urlopen(req).read()
+    page_soup = soup(webpage, 'html.parser')
+    release_div = page_soup.find(id="block-6e7b1a860960c3a8334c")
+    releases = release_div.find_all('strong')
+    list_of_releases = []
 
-webpage = urlopen(req).read()
+    for release in releases:
+        artist = release.text
+        album = release.next_sibling.replace('-', ' ').strip().split('CD/')
+        artist_album = (artist.replace(',', '.') + ' ' + album[0])
+        list_of_releases.append(artist_album)
 
-page_soup = soup(webpage, 'html.parser')
-
-release_div = page_soup.find(id="block-6e7b1a860960c3a8334c")
-
-releases = release_div.find_all('strong')
-
-list_of_releases = []
-
-for release in releases:
-    artist = release.text
-    album = release.next_sibling.replace('-', ' ').strip().split('CD/')
-    artist_album = (artist.replace(',', '.') + ' ' + album[0])
-    list_of_releases.append(artist_album)
-
-scope = 'playlist-modify-public'
-token = util.prompt_for_user_token(username, scope, cid, secret, redirect_uri)
-
-def create_playlist():
+    scope = 'playlist-modify-public'
+    token = util.prompt_for_user_token(username, scope, cid, secret, redirect_uri)
+        
     if token:
         sp = spotipy.Spotify(auth=token)
         sp.trace = False
@@ -63,6 +65,5 @@ def create_playlist():
                 sp.user_playlist_add_tracks(username, playlist_id, ['spotify:track:' + track])
     else:
         print("Can't get token for", username)
-
-create_playlist()
-
+else:
+    print("Today is not a new music day!")
