@@ -1,4 +1,5 @@
 config.json 
 *.[Cc]ache
 __pycache__/
+newmusicpopulator.code-workspace
 .cache-kyledeanreinford

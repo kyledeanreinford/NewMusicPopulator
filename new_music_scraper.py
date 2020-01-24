@@ -22,7 +22,7 @@ if today == 4:
     MM = datetime.now().month
     year = str(datetime.now().year)
     YY = year[:2]
-    release_date = f'{MM}/{DD}/{YY}'
+    release_date = f'{MM}-{DD}-{YY}'
 
     url = f"https://www.grimeys.com/new-releases/{release_date}"
     print(url)
@@ -30,8 +30,9 @@ if today == 4:
     req = Request(url, headers={'User-Agent': 'Mozilla/5.0'})   
     webpage = urlopen(req).read()
     page_soup = soup(webpage, 'html.parser')
-    release_div = page_soup.find(id="block-6e7b1a860960c3a8334c")
-    releases = release_div.find_all('strong')
+    release_div = page_soup.find('div', class_='sqs-layout sqs-grid-12 columns-12')
+    new_release_div = release_div.div.div.div.next_sibling.div
+    releases = new_release_div.find_all('strong')
     list_of_releases = []
 
     for release in releases:
@@ -39,6 +40,8 @@ if today == 4:
         album = release.next_sibling.replace('-', ' ').strip().split('CD/')
         artist_album = (artist.replace(',', '.') + ' ' + album[0])
         list_of_releases.append(artist_album)
+
+    print(list_of_releases)
 
     scope = 'playlist-modify-public'
     token = util.prompt_for_user_token(username, scope, cid, secret, redirect_uri)
